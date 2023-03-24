@@ -1,0 +1,33 @@
+{
+  "name": "share-space",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
+    "prepare": "npx husky install",
+    "lint": "eslint --cache --fix  --ext .vue,.js,.ts,.jsx,.tsx ."
+  },
+  "keywords": [],
+  "author": "Hunter Jiang",
+  "devDependencies": {
+    "@antfu/eslint-config-vue": "0.37.0",
+    "@commitlint/cli": "^17.3.0",
+    "@commitlint/config-conventional": "^17.3.0",
+    "@vue/eslint-config-prettier": "^7.0.0",
+    "@vue/eslint-config-typescript": "^11.0.2",
+    "eslint": "^8.29.0",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3",
+    "prettier": "^2.8.1",
+    "typescript": "5.0.2",
+    "vitepress": "1.0.0-alpha.61"
+  },
+  "readme": "ERROR: No README data found!",
+  "_id": "share-space@1.0.0",
+  "lint-staged": {
+    "*.{vue,ts,tsx,js,jsx}": "eslint --cache --fix --ext .vue,.js,.ts,.jsx,.tsx .",
+    "*.{vue,js,jsx,tsx,ts,less,md,json}": "prettier --ignore-unknown --write"
+  }
+}
