@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: "doc-task",
-      script: "./dist/index.js",
+      script: "./dist/task.js",
       instances: 1,
       autorestart: true,
       watch: false,
