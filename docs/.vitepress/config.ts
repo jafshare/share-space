@@ -33,7 +33,7 @@ export default defineConfig({
     sidebar: [...(ruanyfWeeklyData.slide as any)],
 
     socialLinks: [
-      { icon: "github", link: "https://github.com/vuejs/vitepress" }
+      { icon: "github", link: "https://github.com/jafshare/share-space" }
     ]
   },
   vite: {

@@ -8,7 +8,7 @@
     "docs:preview": "vitepress preview docs --port 7878",
     "dev": "tsup src/*.ts --watch",
     "run": "node ./dist/index.js && pnpm run docs:dev",
-    "build": "tsup src/*.ts && pnpm run docs:build",
+    "deploy": "tsup src/*.ts && node ./dist/index.js && pnpm run docs:build",
     "prepare": "npx husky install",
     "lint": "eslint --cache --fix  --ext .vue,.js,.ts,.jsx,.tsx ."
   },
