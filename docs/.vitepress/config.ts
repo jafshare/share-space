@@ -1,7 +1,9 @@
 import { DefaultTheme, defineConfig } from "vitepress";
 import Inspect from "vite-plugin-inspect";
 import { readJSONSync } from "fs-extra";
-import { RUANYF_WEEKLY } from "../../common/constant";
+import { FRONTEND_WEEKLY, RUANYF_WEEKLY } from "../../common/constant";
+import { join } from "path";
+const cacheDir = join(__dirname, "../../cache");
 /**
  * 获取 阮一峰科技周刊信息
  * @returns
@@ -9,7 +11,21 @@ import { RUANYF_WEEKLY } from "../../common/constant";
 export function getRuanYFWeeklyData(): { slide: DefaultTheme.Sidebar } {
   // 从配置中读取
   try {
-    const meta = readJSONSync(`./cache/${RUANYF_WEEKLY}/meta.json`);
+    const meta = readJSONSync(join(cacheDir, `${RUANYF_WEEKLY}/meta.json`));
+    return { slide: meta.slide };
+  } catch (error) {
+    console.log("error:", error);
+    return { slide: [] };
+  }
+}
+/**
+ * 获取 前端精读周刊
+ * @returns
+ */
+export function getFrontendWeeklyData(): { slide: DefaultTheme.Sidebar } {
+  // 从配置中读取
+  try {
+    const meta = readJSONSync(join(cacheDir, `${FRONTEND_WEEKLY}/meta.json`));
     return { slide: meta.slide };
   } catch (error) {
     console.log("error:", error);
@@ -17,6 +33,7 @@ export function getRuanYFWeeklyData(): { slide: DefaultTheme.Sidebar } {
   }
 }
 const ruanyfWeeklyData = getRuanYFWeeklyData();
+// const frontWeeklyData = getFrontendWeeklyData();
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "Share-Space",
@@ -30,7 +47,10 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [],
 
-    sidebar: [...(ruanyfWeeklyData.slide as any)],
+    sidebar: {
+      [`/${RUANYF_WEEKLY}/`]: [...(ruanyfWeeklyData.slide as any)]
+      // [`/${FRONTEND_WEEKLY}/`]: [...(frontWeeklyData.slide as any)]
+    },
 
     socialLinks: [
       { icon: "github", link: "https://github.com/jafshare/share-space" }

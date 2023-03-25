@@ -58,10 +58,8 @@ function parseMarkdown(filePath: string) {
 }
 
 function cloneDocs() {
-  copySync(
-    join(cacheDir, "docs"),
-    `./docs/src/${RUANYF_WEEKLY}`,
-    ({ content, src, dest }) => {
+  copySync(join(cacheDir, "docs"), `./docs/src/${RUANYF_WEEKLY}`, {
+    transformContent: ({ content, src, dest }) => {
       let transformedContent: string = content;
       const fileLinkRE =
         /http[s]?:\/\/www.ruanyifeng.com\/blog\/.*(issue-[0-9]+)\.html/g;
@@ -82,30 +80,12 @@ function cloneDocs() {
       }
       return transformedContent;
     }
-  );
+  });
 }
 /**
- * 生成左边菜单
+ * 生成菜单
  * @returns
  */
-export async function generateDoc() {
-  // 拉取仓库
-  await fetchGit("git@github.com:ruanyf/weekly.git", cacheDir);
-  // 解析目录
-  const issueData = parseMarkdown(join(cacheDir, "README.md"));
-  // 生成 meta 文件，供 vitepress 使用
-  fs.writeFileSync(
-    join(cacheDir, "meta.json"),
-    JSON.stringify(
-      // TODO md5 gen
-      { slide: generateSide(issueData), md5: "test", createTime: Date.now() },
-      null,
-      2
-    )
-  );
-  // 初始化文件
-  cloneDocs();
-}
 function generateSide(issueData: Record<string, any>): DefaultTheme.Sidebar {
   const sideTree: DefaultTheme.Sidebar = [];
   for (const year in issueData) {
@@ -132,4 +112,25 @@ function generateSide(issueData: Record<string, any>): DefaultTheme.Sidebar {
   }
   sideTree.reverse();
   return sideTree;
+}
+/**
+ * 生成文档资源
+ */
+export async function generateDoc() {
+  // 拉取仓库
+  await fetchGit("git@github.com:ruanyf/weekly.git", cacheDir);
+  // 解析目录
+  const issueData = parseMarkdown(join(cacheDir, "README.md"));
+  // 生成 meta 文件，供 vitepress 使用
+  fs.writeFileSync(
+    join(cacheDir, "meta.json"),
+    JSON.stringify(
+      // TODO md5 gen
+      { slide: generateSide(issueData), md5: "test", createTime: Date.now() },
+      null,
+      2
+    )
+  );
+  // 初始化文件
+  cloneDocs();
 }

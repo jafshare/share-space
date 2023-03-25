@@ -16,7 +16,14 @@ import { ensureFileSync } from "fs-extra";
 export function copySync(
   src: string,
   dest: string,
-  transform?: (data: { content: string; src: string; dest: string }) => string
+  options?: {
+    transformContent?: (data: {
+      content: string;
+      src: string;
+      dest: string;
+    }) => string;
+    transformDestPath?: (dest: string) => string;
+  }
 ) {
   const srcStat = statSync(src);
   // 如果时文件夹则需要依次遍历
@@ -30,15 +37,20 @@ export function copySync(
     children.forEach((child) => {
       const childPath = path.join(src, child);
       const destPath = path.join(dest, child);
-      copySync(childPath, destPath, transform);
+      copySync(childPath, destPath, options);
     });
   } else {
     const content = readFileSync(src, { encoding: "utf-8" });
+    const finalDest = options?.transformDestPath
+      ? options.transformDestPath(dest)
+      : dest;
     // 保证文件有效
-    ensureFileSync(dest);
+    ensureFileSync(finalDest);
     writeFileSync(
-      dest,
-      transform ? transform({ content, src, dest }) : content
+      finalDest,
+      options?.transformContent
+        ? options.transformContent({ content, src, dest })
+        : content
     );
   }
 }
