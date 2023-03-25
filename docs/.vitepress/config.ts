@@ -4,6 +4,7 @@ import { readJSONSync } from "fs-extra";
 import { FRONTEND_WEEKLY, RUANYF_WEEKLY } from "../../common/constant";
 import { join } from "path";
 const cacheDir = join(__dirname, "../../cache");
+const outDir = join(__dirname, "../../dist");
 /**
  * 获取 阮一峰科技周刊信息
  * @returns
@@ -43,6 +44,7 @@ export default defineConfig({
   cleanUrls: true,
   // 调整文档根目录
   srcDir: "src",
+  outDir: outDir,
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [],

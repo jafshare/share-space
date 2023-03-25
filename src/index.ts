@@ -27,6 +27,9 @@ async function run() {
     logger.info("完成更新文档");
     // 这个文档问题比较多，暂时先不用
     // frontendGenerateDoc();
+    logger.info("页面开始更新");
+    spawn("pnpm run build");
+    logger.info("页面结束更新");
   } catch (error) {
     logger.error(`页面更新失败 ${error}`);
   }
@@ -40,7 +43,6 @@ rule.minute = new schedule.Range(0, 59, 30);
 const job = schedule.scheduleJob(rule, async (date) => {
   try {
     await run();
-    spawn("pnpm run docs:build");
   } catch (error) {
     logger.error(`任务执行失败 ${error}`);
   }
