@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "docs:dev": "vitepress dev docs",
+    "docs:dev": "vitepress dev docs --port 7878",
     "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs",
+    "docs:preview": "vitepress preview docs --port 7878",
+    "dev": "tsup src/*.ts --watch",
+    "run": "node ./dist/index.js && pnpm run docs:dev",
+    "build": "tsup src/*.ts && pnpm run docs:build",
     "prepare": "npx husky install",
     "lint": "eslint --cache --fix  --ext .vue,.js,.ts,.jsx,.tsx ."
   },
@@ -15,19 +18,25 @@
     "@antfu/eslint-config-vue": "0.37.0",
     "@commitlint/cli": "^17.3.0",
     "@commitlint/config-conventional": "^17.3.0",
+    "@types/node": "^18.15.7",
     "@vue/eslint-config-prettier": "^7.0.0",
     "@vue/eslint-config-typescript": "^11.0.2",
     "eslint": "^8.29.0",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
     "prettier": "^2.8.1",
+    "tsup": "^6.7.0",
     "typescript": "5.0.2",
+    "vite-plugin-inspect": "^0.7.18",
     "vitepress": "1.0.0-alpha.61"
   },
-  "readme": "ERROR: No README data found!",
-  "_id": "share-space@1.0.0",
   "lint-staged": {
     "*.{vue,ts,tsx,js,jsx}": "eslint --cache --fix --ext .vue,.js,.ts,.jsx,.tsx .",
     "*.{vue,js,jsx,tsx,ts,less,md,json}": "prettier --ignore-unknown --write"
+  },
+  "dependencies": {
+    "@types/fs-extra": "^11.0.1",
+    "fs-extra": "^11.1.1",
+    "gitly": "^2.4.1"
   }
 }
