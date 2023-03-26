@@ -1,8 +1,8 @@
 module.exports = {
   apps: [
     {
-      name: "doc-task",
-      script: "./dist/task.js",
+      name: "doc-cron",
+      script: "./dist/cron.js",
       instances: 1,
       autorestart: true,
       watch: false,

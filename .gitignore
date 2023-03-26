@@ -30,3 +30,5 @@ cache
 # auto generate files
 docs/src/ruanyf_weekly
 docs/src/frontend_weekly
+
+.vercel
