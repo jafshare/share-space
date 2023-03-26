@@ -1,4 +1,11 @@
 {
   "buildCommand": "pnpm run deploy:vercel",
-  "cleanUrls": true
+  "cleanUrls": true,
+  "outputDirectory": "dist",
+  "crons": [
+    {
+      "path": "/api/cron",
+      "schedule": "11 11 * * *"
+    }
+  ]
 }

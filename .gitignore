@@ -26,6 +26,7 @@ dist-ssr
 # Cache
 .eslintcache
 cache
+.cache
 
 # auto generate files
 docs/src/ruanyf_weekly

@@ -3,7 +3,7 @@ import Inspect from "vite-plugin-inspect";
 import { readJSONSync } from "fs-extra";
 import { FRONTEND_WEEKLY, RUANYF_WEEKLY } from "../../common/constant";
 import { join } from "path";
-const cacheDir = join(__dirname, "../../cache");
+const cacheDir = join(__dirname, "../../.cache");
 const outDir = join(__dirname, "../../dist");
 /**
  * 获取 阮一峰科技周刊信息

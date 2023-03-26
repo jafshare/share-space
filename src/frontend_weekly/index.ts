@@ -7,7 +7,7 @@ import type { DefaultTheme } from "vitepress";
 import { copySync } from "../common/copy";
 import { fetchGit } from "../common/fetch";
 import { FRONTEND_WEEKLY } from "../../common/constant";
-const cacheDir = `./cache/${FRONTEND_WEEKLY}`;
+const cacheDir = `./.cache/${FRONTEND_WEEKLY}`;
 
 /**
  * 解析 markdown 文档，

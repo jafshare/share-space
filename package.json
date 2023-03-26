@@ -8,9 +8,10 @@
     "docs:preview": "vitepress preview docs --port 7878",
     "dev": "tsup src/*.ts --watch",
     "run": "node ./dist/task.js",
-    "build": "pnpm run docs:build && tsup src/*.ts",
-    "deploy": "tsup src/*.ts && npx pm2 start ecosystem.config.js",
-    "deploy:vercel": "pnpm run deploy",
+    "build:script": "tsup src/*.ts",
+    "build": "pnpm run docs:build && pnpm run build:script",
+    "deploy": "pnpm run build:script && npx pm2 start ecosystem.config.js",
+    "deploy:vercel": "pnpm run build:script && pnpm run run",
     "prepare": "npx husky install",
     "lint": "eslint --cache --fix  --ext .vue,.js,.ts,.jsx,.tsx ."
   },
@@ -20,12 +21,11 @@
     "@antfu/eslint-config-vue": "0.37.0",
     "@commitlint/cli": "^17.3.0",
     "@commitlint/config-conventional": "^17.3.0",
-    "@types/cross-spawn": "^6.0.2",
+    "@types/fs-extra": "^11.0.1",
     "@types/node": "^18.15.7",
     "@types/node-schedule": "^2.1.0",
     "@vue/eslint-config-prettier": "^7.0.0",
     "@vue/eslint-config-typescript": "^11.0.2",
-    "cross-spawn": "^7.0.3",
     "eslint": "^8.29.0",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
@@ -42,9 +42,9 @@
     "*.{vue,js,jsx,tsx,ts,less,md,json}": "prettier --ignore-unknown --write"
   },
   "dependencies": {
-    "@types/fs-extra": "^11.0.1",
     "fs-extra": "^11.1.1",
     "gitly": "^2.4.1",
-    "node-schedule": "^2.1.1"
+    "node-schedule": "^2.1.1",
+    "spawn-please": "^2.0.1"
   }
 }

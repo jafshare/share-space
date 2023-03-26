@@ -9,6 +9,6 @@ import gitly from "gitly";
 export async function fetchGit(repo: string, dest: string) {
   return gitly(repo, dest, {
     throw: true,
-    temp: join(__dirname, "../../cache")
+    temp: join(__dirname, "../../.cache")
   });
 }
