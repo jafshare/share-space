@@ -52,7 +52,7 @@ export function getHelloGithubData(): { slide: DefaultTheme.Sidebar } {
   }
 }
 const ruanyfWeeklyData = getRuanYFWeeklyData();
-// const frontWeeklyData = getFrontendWeeklyData();
+const frontWeeklyData = getFrontendWeeklyData();
 const helloGithubData = getHelloGithubData();
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -70,7 +70,7 @@ export default defineConfig({
 
     sidebar: {
       [`/${RUANYF_WEEKLY}/`]: [...(ruanyfWeeklyData.slide as any)],
-      // [`/${FRONTEND_WEEKLY}/`]: [...(frontWeeklyData.slide as any)]
+      [`/${FRONTEND_WEEKLY}/`]: [...(frontWeeklyData.slide as any)],
       [`/${HELLO_GITHUB}/`]: [...(helloGithubData.slide as any)]
     },
 

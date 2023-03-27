@@ -8,7 +8,6 @@ import { copySync } from "../common/copy";
 import { fetchGit } from "../common/fetch";
 import { FRONTEND_WEEKLY } from "../../common/constant";
 const cacheDir = `./.cache/${FRONTEND_WEEKLY}`;
-
 /**
  * 解析 markdown 文档，
  * @param filePath
@@ -52,14 +51,12 @@ function cloneDocs() {
       if (dest.includes("21.精读《Web fonts")) {
         return dest.replace(
           /21.精读《Web fonts.+$/,
+
           "21.精读《Web fonts: when you need them, when you don’t》.md"
         );
       } else if (dest.includes("25.精读《null")) {
         // 处理文件名编码问题 25.精读《null = 0》.md
-        return dest.replace(
-          /25.精读《null.+$/,
-          "25.%E7%B2%BE%E8%AF%BB%E3%80%8Anull%20%3E%3D%200%3F%E3%80%8B.md"
-        );
+        return dest.replace(/25.精读《null.+$/, "25.精读《null = 0》.md");
       }
       return dest;
     },
@@ -87,9 +84,15 @@ function generateSide(menuData: Record<string, any>): DefaultTheme.Sidebar {
       items: []
     };
     for (const menu of menuData[group]) {
+      const docPath = menu.docPath
+        .replace("./", "")
+        .replace(/([^\/]+)$/, (_: string, filename: string) => {
+          // 中文格式化
+          return encodeURIComponent(filename);
+        });
       groupMenu.items!.push({
         text: menu.title,
-        link: `/${FRONTEND_WEEKLY}/${menu.docPath.replace("./", "")}`
+        link: `/${FRONTEND_WEEKLY}/${docPath}`
       });
     }
     sideTree.push(groupMenu);
