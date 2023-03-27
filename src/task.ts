@@ -2,12 +2,13 @@
 import spawnPromise from "spawn-please";
 import { generateDoc } from "./ruanyf_weekly";
 // import { generateDoc as frontendGenerateDoc } from "./frontend_weekly";
+import { generateDoc as helloGithubGenerateDoc } from "./hello_github";
 import { logger } from "./common/logger";
 logger.info("start");
 export async function run() {
   try {
     logger.info("开始更新文档");
-    await generateDoc();
+    await Promise.all([generateDoc(), helloGithubGenerateDoc()]);
     logger.info("完成更新文档");
     // 这个文档问题比较多，暂时先不用
     // frontendGenerateDoc();

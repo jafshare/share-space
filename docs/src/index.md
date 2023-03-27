@@ -10,6 +10,9 @@ hero:
     - theme: brand
       text: 阮一峰技术周刊
       link: /ruanyf_weekly/issue-247
+    - theme: brand
+      text: HelloGithub
+      link: /hello_github/HelloGitHub01
 
 features:
   - title: 自动更新
