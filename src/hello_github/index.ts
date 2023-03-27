@@ -36,7 +36,7 @@ export async function parseDir(dirPath: string) {
     const docPath = str.replace(/\\/g, "/");
     if (issueResult) {
       return {
-        title: issueResult[1],
+        title: `《HelloGitHub》第${issueResult[2]}期`,
         docPath
       };
     }
@@ -51,7 +51,28 @@ export async function parseDir(dirPath: string) {
 function cloneDocs() {
   copySync(join(cacheDir, "content"), `./docs/src/${HELLO_GITHUB}`, {
     transformContent: ({ content, src, dest }) => {
-      const transformedContent: string = content;
+      let transformedContent: string = content;
+      // 处理不规范的 img 自闭合标签
+      const closeRE = /<((img)[^<>]*)> *<\/(img)>/g;
+      transformedContent = transformedContent.replace(
+        closeRE,
+        (_, tagContent) => {
+          // 将标签转为自闭合标签，避免报错
+          return `<${tagContent} />`;
+        }
+      );
+      // 对内部链接进行转换，避免跳转到旧网站
+      const inlineLinkRE =
+        /https:\/\/github.com\/521xueweihan\/HelloGitHub\/blob\/master\/content\/(HelloGitHub\d+).md/g;
+      transformedContent = transformedContent.replace(
+        inlineLinkRE,
+        (_, filename) => {
+          return `./${filename}`;
+        }
+      );
+      // 屏蔽 <results> , 避免解析报错
+      const resultsRE = /<results>/g;
+      transformedContent = transformedContent.replace(resultsRE, "");
       return transformedContent;
     }
   });
@@ -65,7 +86,10 @@ function generateSide(menuData: any[]): DefaultTheme.Sidebar {
   const sideTree: DefaultTheme.Sidebar = menuData.map((item) => {
     return {
       text: item.title,
-      link: `${item.docPath.replace(".cache/content", "")}`
+      link: `${item.docPath.replace(
+        `.cache/${HELLO_GITHUB}/content`,
+        `/${HELLO_GITHUB}`
+      )}`
     };
   });
   return sideTree;
@@ -80,6 +104,7 @@ export async function generateDoc() {
 
   // 解析目录
   const menuData = await parseDir(join(cacheDir, "content"));
+  menuData.reverse();
   // 生成 meta 文件，供 vitepress 使用
   fs.writeFileSync(
     join(cacheDir, "meta.json"),

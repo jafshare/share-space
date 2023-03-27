@@ -12,7 +12,7 @@ hero:
       link: /ruanyf_weekly/issue-247
     - theme: brand
       text: HelloGithub
-      link: /hello_github/HelloGitHub01
+      link: /hello_github/HelloGitHub83
 
 features:
   - title: 自动更新
