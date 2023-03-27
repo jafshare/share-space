@@ -70,9 +70,11 @@ function cloneDocs() {
           return `./${filename}`;
         }
       );
-      // 屏蔽 <results> , 避免解析报错
-      const resultsRE = /<results>/g;
-      transformedContent = transformedContent.replace(resultsRE, "");
+      // 处理 HelloGitHub73 的 <results> 解析报错
+      if (src.endsWith("HelloGitHub73.md")) {
+        const resultsRE = /<results>/g;
+        transformedContent = transformedContent.replace(resultsRE, "");
+      }
       return transformedContent;
     }
   });
