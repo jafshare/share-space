@@ -22,7 +22,7 @@ export function copySync(
       src: string;
       dest: string;
     }) => string;
-    transformDestPath?: (dest: string) => string;
+    transformDestPath?: (data: { src: string; dest: string }) => string;
   }
 ) {
   const srcStat = statSync(src);
@@ -42,7 +42,7 @@ export function copySync(
   } else {
     const content = readFileSync(src, { encoding: "utf-8" });
     const finalDest = options?.transformDestPath
-      ? options.transformDestPath(dest)
+      ? options.transformDestPath({ src, dest })
       : dest;
     // 保证文件有效
     ensureFileSync(finalDest);

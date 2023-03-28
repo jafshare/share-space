@@ -15,7 +15,7 @@ hero:
       link: /hello_github/HelloGitHub83
     - theme: brand
       text: 前端精读周刊
-      link: /frontend_weekly/前沿技术/1.精读《js 模块化发展》
+      link: /frontend_weekly/1.md
 
 features:
   - title: 自动更新
