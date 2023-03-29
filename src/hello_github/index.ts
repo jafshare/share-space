@@ -25,7 +25,7 @@ export async function parseDir(dirPath: string): Promise<DocRecord[]> {
       data.push({
         text: `《HelloGitHub》第${issue}期`,
         filename,
-        link: `/${HELLO_GITHUB}/${filename}`,
+        link: `/${HELLO_GITHUB}/${filename.replace(".md", "")}`,
         sourcePath,
         destPath,
         order: -1

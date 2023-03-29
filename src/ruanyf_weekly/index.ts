@@ -53,7 +53,7 @@ async function parseMarkdown(
         filename,
         sourcePath: join(cacheDir, sourcePath),
         destPath: join(`./docs/src/${RUANYF_WEEKLY}`, filename),
-        link: `/${RUANYF_WEEKLY}/${filename}`,
+        link: `/${RUANYF_WEEKLY}/${filename.replace(".md", "")}`,
         order: -1
       });
     }
