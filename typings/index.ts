@@ -7,7 +7,7 @@ declare interface Meta {
 }
 
 declare interface DocRecord {
-  title: string;
+  text: string;
   filename: string;
   sourcePath: string;
   destPath: string;

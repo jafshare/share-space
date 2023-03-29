@@ -1,10 +1,10 @@
 /**
  * 针对 https://github.com/ruanyf/weekly 文档的单独处理
  */
-import fs from "node:fs";
 import { join } from "node:path";
 import type { DefaultTheme } from "vitepress";
-import { copySync } from "../common/copy";
+import { readFile, writeJSON } from "fs-extra";
+import { copy } from "../common/copy";
 import { fetchGit } from "../common/fetch";
 import { RUANYF_WEEKLY } from "../../common/constant";
 const cacheDir = `./.cache/${RUANYF_WEEKLY}`;
@@ -12,8 +12,10 @@ const cacheDir = `./.cache/${RUANYF_WEEKLY}`;
  * 解析 markdown 文档，
  * @param filePath
  */
-function parseMarkdown(filePath: string) {
-  const content = fs.readFileSync(filePath, "utf-8");
+async function parseMarkdown(
+  filePath: string
+): Promise<Record<string, Record<string, DocRecord[]>>> {
+  const content = await readFile(filePath, "utf-8");
   // match: ## 2021
   const yearRE = /^## (20\d+) *$/;
   // match: **二月** 、 ** 三月**、
@@ -23,10 +25,7 @@ function parseMarkdown(filePath: string) {
   const lines = content.split("\n");
   let year;
   let month;
-  const data: Record<
-    string,
-    { [propName: string]: { title: string; docPath: string }[] }
-  > = {};
+  const data: Record<string, Record<string, DocRecord[]>> = {};
   for (const line of lines) {
     // parse year
     const yearResult = yearRE.exec(line);
@@ -47,65 +46,72 @@ function parseMarkdown(filePath: string) {
     if (issueResult) {
       const issue = issueResult[1];
       const title = issueResult[2];
-      const docPath = issueResult[3];
+      const sourcePath = issueResult[3];
+      const filename = sourcePath.replace("docs/", "");
       data[year as string][month as string].push({
-        title: `${issue}: ${title}`,
-        docPath
+        text: `${issue}: ${title}`,
+        filename,
+        sourcePath: join(cacheDir, sourcePath),
+        destPath: join(`./docs/src/${RUANYF_WEEKLY}`, filename),
+        link: `/${RUANYF_WEEKLY}/${filename}`,
+        order: -1
       });
     }
   }
   return data;
 }
 
-function cloneDocs() {
-  copySync(join(cacheDir, "docs"), `./docs/src/${RUANYF_WEEKLY}`, {
-    transformContent: ({ content, src, dest }) => {
-      let transformedContent: string = content;
-      const fileLinkRE =
-        /http[s]?:\/\/www.ruanyifeng.com\/blog\/.*(issue-[0-9]+)\.html/g;
-      // 处理 http://www.ruanyifeng.com/blog/ 地址的跳转, 避免跳转到旧页面
-      transformedContent = transformedContent.replace(
-        fileLinkRE,
-        (val, filename) => {
-          return `./${filename}`;
+async function cloneDocs(docs: DocRecord[]) {
+  for await (const doc of docs) {
+    await copy(doc.sourcePath, doc.destPath, {
+      transformContent: ({ content }) => {
+        let transformedContent: string = content;
+        const fileLinkRE =
+          /http[s]?:\/\/www.ruanyifeng.com\/blog\/.*(issue-[0-9]+)\.html/g;
+        // 处理 http://www.ruanyifeng.com/blog/ 地址的跳转, 避免跳转到旧页面
+        transformedContent = transformedContent.replace(
+          fileLinkRE,
+          (val, filename) => {
+            return `./${filename}`;
+          }
+        );
+        const filename = doc.filename;
+        // TODO 还有一些如 http://www.ruanyifeng.com/blog/2018/07/my-books.html、http://www.ruanyifeng.com/blog/2018/07/my-books.html 需要处理
+        // 处理 issue-8 <span data-type="color" style="color:rgb(34, 34, 34)"> 未闭合的问题
+        if (filename === "issue-8.md") {
+          transformedContent = transformedContent.replace(/<span[^<>]+>/g, "");
+        } else if (filename === "issue-82.md") {
+          // 处理 issue-82 %EF%BC%9A 地址跳转问题
+          transformedContent = transformedContent.replace("%EF%BC%9A", "");
         }
-      );
-      // TODO 还有一些如 http://www.ruanyifeng.com/blog/2018/07/my-books.html、http://www.ruanyifeng.com/blog/2018/07/my-books.html 需要处理
-      // 处理 issue-8 <span data-type="color" style="color:rgb(34, 34, 34)"> 未闭合的问题
-      if (src.endsWith("issue-8.md")) {
-        transformedContent = transformedContent.replace(/<span[^<>]+>/g, "");
-      } else if (src.endsWith("issue-82.md")) {
-        // 处理 issue-82 %EF%BC%9A 地址跳转问题
-        transformedContent = transformedContent.replace("%EF%BC%9A", "");
+        return transformedContent;
       }
-      return transformedContent;
-    }
-  });
+    });
+  }
 }
 /**
  * 生成菜单
  * @returns
  */
-function generateSide(issueData: Record<string, any>): DefaultTheme.Sidebar {
+function generateSide(
+  menuData: Record<string, Record<string, DocRecord[]>>
+): DefaultTheme.Sidebar {
   const sideTree: DefaultTheme.Sidebar = [];
-  for (const year in issueData) {
+  for (const year in menuData) {
     const yearSide: DefaultTheme.SidebarItem = {
       text: year,
       collapsed: true,
       items: []
     };
-    for (const month in issueData[year]) {
+    for (const month in menuData[year]) {
       const monthSide: DefaultTheme.SidebarItem = {
         text: month,
         collapsed: true,
         items: []
       };
       yearSide.items!.push(monthSide);
-      for (const issue of issueData[year][month]) {
-        monthSide.items!.push({
-          text: issue.title,
-          link: issue.docPath.replace("docs", `/${RUANYF_WEEKLY}`)
-        });
+      for (const item of menuData[year][month]) {
+        monthSide.items!.push(item);
       }
     }
     sideTree.push(yearSide);
@@ -120,17 +126,25 @@ export async function generateDoc() {
   // 拉取仓库
   await fetchGit("git@github.com:ruanyf/weekly.git", cacheDir);
   // 解析目录
-  const issueData = parseMarkdown(join(cacheDir, "README.md"));
+  const docRecords = await parseMarkdown(join(cacheDir, "README.md"));
   // 生成 meta 文件，供 vitepress 使用
-  fs.writeFileSync(
+  await writeJSON(
     join(cacheDir, "meta.json"),
-    JSON.stringify(
-      // TODO md5 gen
-      { slide: generateSide(issueData), md5: "test", createTime: Date.now() },
-      null,
-      2
-    )
+    // TODO md5 gen
+    { slide: generateSide(docRecords), md5: "test", createTime: Date.now() },
+    { spaces: 2 }
   );
+  // 遍历获取所有的 docs
+  const docs: DocRecord[] = Object.keys(docRecords).reduce((prev, cur) => {
+    prev.push(
+      ...Object.keys(docRecords[cur]).reduce((p, c) => {
+        // @ts-expect-error
+        p.push(...docRecords[cur][c]);
+        return p;
+      }, [])
+    );
+    return prev;
+  }, []);
   // 初始化文件
-  cloneDocs();
+  await cloneDocs(docs);
 }

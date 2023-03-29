@@ -6,7 +6,7 @@ import { readFile, writeJson } from "fs-extra";
 import type { DefaultTheme } from "vitepress";
 import fg from "fast-glob";
 import { fetchGit } from "../common/fetch";
-import { copySync } from "../common/copy";
+import { copy } from "../common/copy";
 import { FRONTEND_WEEKLY } from "../../common/constant";
 const cacheDir = `./.cache/${FRONTEND_WEEKLY}`;
 
@@ -31,38 +31,30 @@ async function parseMarkdown(
   }
   // 由于文档文件名有中文编码有问题需要通过遍历文件夹获取
   for (const groupName in data) {
-    const children = await fg(["*.md"], {
+    // 只匹配 1.xxx.md 、2.xxx.md的文档
+    const children = await fg(["*.*.md"], {
       cwd: join(cacheDir, groupName),
       objectMode: true,
       onlyFiles: true,
       absolute: true
     });
-    data[groupName].push(
-      ...children.map((child) => {
-        const titleRE = /^((\d+).+)\.md$/;
-        const titleResult = titleRE.exec(child.name);
-        if (titleResult) {
-          const filename = titleResult?.[2];
-          return {
-            title: titleResult?.[1],
-            filename,
-            sourcePath: child.path,
-            destPath: join(`./docs/src/${FRONTEND_WEEKLY}`, `${filename}.md`),
-            link: `/${FRONTEND_WEEKLY}/${filename}`,
-            order: parseInt(titleResult?.[2])
-          } as DocRecord;
-        } else {
-          // 回退
-          return {
-            title: child.name,
-            filename: child.name,
-            sourcePath: child.path,
-            destPath: join(`./docs/src/${FRONTEND_WEEKLY}`, child.name),
-            link: `/${FRONTEND_WEEKLY}/${child.name}`
-          };
-        }
-      })
-    );
+    children.forEach((child) => {
+      const titleRE = /^((\d+).+)\.md$/;
+      const titleResult = titleRE.exec(child.name);
+      if (titleResult) {
+        const issue = titleResult?.[2];
+        const filename = `${issue}.md`;
+        data[groupName].push({
+          text: titleResult?.[1],
+          filename,
+          sourcePath: child.path,
+          // 用于是中文需要转为 1.md 、2.md 的格式，避免中文乱码
+          destPath: join(`./docs/src/${FRONTEND_WEEKLY}`, filename),
+          link: `/${FRONTEND_WEEKLY}/${issue}`,
+          order: parseInt(issue)
+        });
+      }
+    });
     // 排序
     data[groupName].sort((a, b) => {
       if (a.order && b.order) {
@@ -76,8 +68,8 @@ async function parseMarkdown(
 
 async function cloneDocs(docs: DocRecord[]) {
   for await (const doc of docs) {
-    await copySync(doc.sourcePath, doc.destPath, {
-      transformContent: ({ content, src, dest }) => {
+    await copy(doc.sourcePath, doc.destPath, {
+      transformContent: ({ content }) => {
         let transformedContent: string = content;
         // 内部链接跳转(比如217)
         const inlineLinkRE =
@@ -89,25 +81,25 @@ async function cloneDocs(docs: DocRecord[]) {
           }
         );
         const filename = doc.filename;
-        if (filename === "6") {
+        if (filename === "6.md") {
           // 处理 6.精读《JavaScript 错误堆栈处理》.md 的 script 未闭合的问题
           transformedContent = transformedContent.replace(
             "<script>",
             "`<script>`"
           );
-        } else if (filename === "25") {
+        } else if (filename === "25.md") {
           // 处理 25.精读《null >= 0?》.md的空资源引用
           transformedContent = transformedContent.replace(
             `<img src="assets/24/gt.jpeg" width="500" alt="logo" />`,
             ""
           );
-        } else if (filename === "26") {
+        } else if (filename === "26.md") {
           // 处理 26.精读《加密媒体扩展》.md 的 video 标签问题
           const videoRE = /<video( \/)?>/g;
           transformedContent = transformedContent.replace(videoRE, (tag) => {
             return `\`${tag}\``;
           });
-        } else if (filename === "58") {
+        } else if (filename === "58.md") {
           // 处理 58.精读《Typescript2.0 - 2.9》.md 的泛型问题
           transformedContent = transformedContent.replace(
             `* Readonly<T>。把对象 key 全部设置为只读，或者利用 \`2.8\` 的条件类型语法，实现递归设置只读。
@@ -131,7 +123,7 @@ async function cloneDocs(docs: DocRecord[]) {
 * \`ReturnType<T>\`。获取函数 \`T\` 返回值的类型，这个类型意义很大。
 * \`InstanceType<T>\`。获取一个构造函数类型的实例类型。`
           );
-        } else if (filename === "145") {
+        } else if (filename === "145.md") {
           // 处理 145.精读《React Router v6》未闭合的标签
           transformedContent = transformedContent
             .replace(
@@ -139,13 +131,13 @@ async function cloneDocs(docs: DocRecord[]) {
               "### `<Switch>` 更名为 `<Routes>`"
             )
             .replace("### <Route> 升级", "### `<Route>` 升级");
-        } else if (filename === "197") {
+        } else if (filename === "197.md") {
           // 处理 197.精读《低代码逻辑编排》中的插值导致的报错，解决方案参考 https://vitepress.dev/guide/using-vue
           transformedContent = transformedContent.replace(
             "`{{msg.payload}}`",
             "<span v-pre>`{{msg.payload}}`</span>"
           );
-        } else if (filename === "217") {
+        } else if (filename === "217.md") {
           // 处理 217.精读《15 大 LOD 表达式 - 下》.md 在 vitepress 下的插值语法错误
           transformedContent = transformedContent.replace(
             "| { include : max([Date]) } |",
@@ -173,14 +165,7 @@ function generateSide(
       items: []
     };
     for (const menu of menuData[group]) {
-      groupMenu.items!.push({
-        text: menu.title,
-        link: menu.link,
-        sourcePath: menu.sourcePath,
-        destPath: menu.destPath,
-        filename: menu.filename,
-        order: menu.order
-      });
+      groupMenu.items!.push({ ...menu });
     }
     sideTree.push(groupMenu);
   }
@@ -198,7 +183,8 @@ export async function generateDoc() {
   await writeJson(
     join(cacheDir, "meta.json"),
     // TODO md5 gen
-    { slide: generateSide(docRecords), md5: "test", createTime: Date.now() }
+    { slide: generateSide(docRecords), md5: "test", createTime: Date.now() },
+    { spaces: 2 }
   );
   // 遍历获取所有的 docs
   const docs: DocRecord[] = Object.keys(docRecords).reduce((prev, cur) => {
@@ -207,5 +193,5 @@ export async function generateDoc() {
     return prev;
   }, []);
   // 初始化文件
-  cloneDocs(docs);
+  await cloneDocs(docs);
 }
