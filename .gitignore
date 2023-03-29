@@ -31,5 +31,6 @@ cache
 # auto generate files
 docs/src/ruanyf_weekly
 docs/src/frontend_weekly
+docs/src/hello_github
 
 .vercel

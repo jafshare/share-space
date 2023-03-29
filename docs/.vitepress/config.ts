@@ -1,7 +1,11 @@
 import { DefaultTheme, defineConfig } from "vitepress";
 import Inspect from "vite-plugin-inspect";
 import { readJSONSync } from "fs-extra";
-import { FRONTEND_WEEKLY, RUANYF_WEEKLY } from "../../common/constant";
+import {
+  FRONTEND_WEEKLY,
+  HELLO_GITHUB,
+  RUANYF_WEEKLY
+} from "../../common/constant";
 import { join } from "path";
 const cacheDir = join(__dirname, "../../.cache");
 const outDir = join(__dirname, "../../dist");
@@ -33,8 +37,23 @@ export function getFrontendWeeklyData(): { slide: DefaultTheme.Sidebar } {
     return { slide: [] };
   }
 }
+/**
+ * 获取 HelloGitHub 的数据
+ * @returns
+ */
+export function getHelloGithubData(): { slide: DefaultTheme.Sidebar } {
+  // 从配置中读取
+  try {
+    const meta = readJSONSync(join(cacheDir, `${HELLO_GITHUB}/meta.json`));
+    return { slide: meta.slide };
+  } catch (error) {
+    console.log("error:", error);
+    return { slide: [] };
+  }
+}
 const ruanyfWeeklyData = getRuanYFWeeklyData();
-// const frontWeeklyData = getFrontendWeeklyData();
+const frontWeeklyData = getFrontendWeeklyData();
+const helloGithubData = getHelloGithubData();
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "Share-Space",
@@ -50,14 +69,16 @@ export default defineConfig({
     nav: [],
 
     sidebar: {
-      [`/${RUANYF_WEEKLY}/`]: [...(ruanyfWeeklyData.slide as any)]
-      // [`/${FRONTEND_WEEKLY}/`]: [...(frontWeeklyData.slide as any)]
+      [`/${RUANYF_WEEKLY}/`]: [...(ruanyfWeeklyData.slide as any)],
+      [`/${FRONTEND_WEEKLY}/`]: [...(frontWeeklyData.slide as any)],
+      [`/${HELLO_GITHUB}/`]: [...(helloGithubData.slide as any)]
     },
 
     socialLinks: [
       { icon: "github", link: "https://github.com/jafshare/share-space" }
     ]
   },
+  ignoreDeadLinks: true,
   vite: {
     plugins: [Inspect()]
   }
