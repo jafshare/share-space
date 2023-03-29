@@ -8,6 +8,7 @@ declare interface Meta {
 
 declare interface DocRecord {
   title: string;
+  filename: string;
   sourcePath: string;
   destPath: string;
   link: string;

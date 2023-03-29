@@ -78,6 +78,7 @@ export default defineConfig({
       { icon: "github", link: "https://github.com/jafshare/share-space" }
     ]
   },
+  ignoreDeadLinks: true,
   vite: {
     plugins: [Inspect()]
   }
