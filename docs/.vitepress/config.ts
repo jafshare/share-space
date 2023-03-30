@@ -1,5 +1,6 @@
 import { DefaultTheme, defineConfig } from "vitepress";
 import Inspect from "vite-plugin-inspect";
+import { SearchPlugin } from "vitepress-plugin-search";
 import { readJSONSync } from "fs-extra";
 import {
   FRONTEND_WEEKLY,
@@ -80,6 +81,15 @@ export default defineConfig({
   },
   ignoreDeadLinks: true,
   vite: {
-    plugins: [Inspect()]
+    plugins: [
+      Inspect(),
+      SearchPlugin({
+        previewLength: 62,
+        buttonLabel: "Search",
+        placeholder: "Search docs",
+        // 中文配置, 参考 https://github.com/emersonbottero/vitepress-plugin-search/issues/11
+        tokenize: "full"
+      })
+    ]
   }
 });

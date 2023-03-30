@@ -27,6 +27,7 @@
     "@vue/eslint-config-prettier": "^7.0.0",
     "@vue/eslint-config-typescript": "^11.0.2",
     "eslint": "^8.29.0",
+    "flexsearch": "^0.7.31",
     "husky": "^8.0.1",
     "less": "^4.1.3",
     "lint-staged": "^13.0.3",
@@ -36,7 +37,8 @@
     "tsup": "^6.7.0",
     "typescript": "5.0.2",
     "vite-plugin-inspect": "^0.7.18",
-    "vitepress": "1.0.0-alpha.63"
+    "vitepress": "1.0.0-alpha.63",
+    "vitepress-plugin-search": "1.0.4-alpha.19"
   },
   "lint-staged": {
     "*.{vue,ts,tsx,js,jsx}": "eslint --cache --fix --ext .vue,.js,.ts,.jsx,.tsx .",
