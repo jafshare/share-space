@@ -124,7 +124,7 @@ function generateSide(
  */
 export async function generateDoc() {
   // 拉取仓库
-  await fetchGit("git@github.com:ruanyf/weekly.git", cacheDir);
+  await fetchGit("https://github.com/ruanyf/weekly.git", cacheDir);
   // 解析目录
   const docRecords = await parseMarkdown(join(cacheDir, "README.md"));
   // 生成 meta 文件，供 vitepress 使用
@@ -138,8 +138,7 @@ export async function generateDoc() {
   const docs: DocRecord[] = Object.keys(docRecords).reduce((prev, cur) => {
     prev.push(
       ...Object.keys(docRecords[cur]).reduce((p, c) => {
-        // @ts-expect-error
-        p.push(...docRecords[cur][c]);
+        (p as DocRecord[]).push(...docRecords[cur][c]);
         return p;
       }, [])
     );
