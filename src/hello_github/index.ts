@@ -83,7 +83,7 @@ function generateSide(menuData: DocRecord[]): DefaultTheme.Sidebar {
  */
 export async function generateDoc() {
   // 拉取仓库
-  await fetchGit("git@github.com:521xueweihan/HelloGitHub.git", cacheDir);
+  await fetchGit("https://github.com/521xueweihan/HelloGitHub.git", cacheDir);
 
   // 解析目录
   const docRecords = await parseDir(join(cacheDir, "content"));

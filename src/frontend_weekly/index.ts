@@ -80,6 +80,10 @@ async function cloneDocs(docs: DocRecord[]) {
             return `./${name}`;
           }
         );
+        // 增加 title，
+        if (!transformedContent.startsWith("# ")) {
+          transformedContent = `# ${doc.text}\n${transformedContent}`;
+        }
         const filename = doc.filename;
         if (filename === "6.md") {
           // 处理 6.精读《JavaScript 错误堆栈处理》.md 的 script 未闭合的问题
@@ -176,7 +180,7 @@ function generateSide(
  * 生成文档资源
  */
 export async function generateDoc() {
-  await fetchGit("git@github.com:ascoders/weekly.git", cacheDir);
+  await fetchGit("https://github.com/ascoders/weekly.git", cacheDir);
   // 解析目录
   const docRecords = await parseMarkdown(join(cacheDir, "readme.md"));
   // 生成 meta 文件，供 vitepress 使用
@@ -188,8 +192,7 @@ export async function generateDoc() {
   );
   // 遍历获取所有的 docs
   const docs: DocRecord[] = Object.keys(docRecords).reduce((prev, cur) => {
-    // @ts-expect-error
-    prev.push(...docRecords[cur]);
+    (prev as DocRecord[]).push(...docRecords[cur]);
     return prev;
   }, []);
   // 初始化文件
