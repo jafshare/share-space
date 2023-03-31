@@ -21,6 +21,7 @@
     "@antfu/eslint-config-vue": "0.37.0",
     "@commitlint/cli": "^17.3.0",
     "@commitlint/config-conventional": "^17.3.0",
+    "@node-rs/jieba": "^1.6.2",
     "@types/fs-extra": "^11.0.1",
     "@types/node": "^18.15.7",
     "@types/node-schedule": "^2.1.0",
@@ -37,8 +38,7 @@
     "tsup": "^6.7.0",
     "typescript": "5.0.2",
     "vite-plugin-inspect": "^0.7.18",
-    "vitepress": "1.0.0-alpha.63",
-    "vitepress-plugin-search": "1.0.4-alpha.19"
+    "vitepress": "1.0.0-alpha.63"
   },
   "lint-staged": {
     "*.{vue,ts,tsx,js,jsx}": "eslint --cache --fix --ext .vue,.js,.ts,.jsx,.tsx .",
@@ -49,6 +49,7 @@
     "fs-extra": "^11.1.1",
     "gitly": "^2.4.1",
     "node-schedule": "^2.1.1",
-    "spawn-please": "^2.0.1"
+    "spawn-please": "^2.0.1",
+    "vitepress-plugin-search": "1.0.4-alpha.19"
   }
 }
