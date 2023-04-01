@@ -82,6 +82,11 @@ export default defineConfig({
   },
   ignoreDeadLinks: true,
   vite: {
+    build: {
+      // 解决 SearchPlugin build不执行构建索引的问题
+      // issue: https://github.com/emersonbottero/vitepress-plugin-search/issues/58
+      ssr: false
+    },
     plugins: [
       Inspect(),
       SearchPlugin({
