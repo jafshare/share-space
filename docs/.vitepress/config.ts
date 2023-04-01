@@ -1,5 +1,7 @@
 import { DefaultTheme, defineConfig } from "vitepress";
 import Inspect from "vite-plugin-inspect";
+import { SearchPlugin } from "vitepress-plugin-search";
+import { cut } from "@node-rs/jieba";
 import { readJSONSync } from "fs-extra";
 import {
   FRONTEND_WEEKLY,
@@ -80,6 +82,30 @@ export default defineConfig({
   },
   ignoreDeadLinks: true,
   vite: {
-    plugins: [Inspect()]
+    build: {
+      // 解决 SearchPlugin build不执行构建索引的问题
+      // issue: https://github.com/emersonbottero/vitepress-plugin-search/issues/58
+      ssr: false
+    },
+    plugins: [
+      Inspect(),
+      SearchPlugin({
+        previewLength: 20,
+        buttonLabel: "搜索",
+        placeholder: "文章搜索",
+        /**
+         * 采用分词器优化.
+         *
+         * 中文分词器：https://www.npmjs.com/package/@node-rs/jieba
+         *
+         * 字典配置：https://www.npmjs.com/package/nodejieba
+         *
+         * 相关文章: https://zhuanlan.zhihu.com/p/453803476
+         */
+        tokenize: function (str) {
+          return cut(str, false);
+        }
+      })
+    ]
   }
 });
