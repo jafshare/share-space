@@ -1,7 +1,7 @@
 import { DefaultTheme, defineConfig } from "vitepress";
 import Inspect from "vite-plugin-inspect";
-import { SearchPlugin } from "vitepress-plugin-search";
-import { cut } from "@node-rs/jieba";
+// import { SearchPlugin } from "vitepress-plugin-search";
+// import { cut } from "@node-rs/jieba";
 import { readJSONSync } from "fs-extra";
 import {
   FRONTEND_WEEKLY,
@@ -11,51 +11,40 @@ import {
 import { join } from "path";
 const cacheDir = join(__dirname, "../../.cache");
 const outDir = join(__dirname, "../../dist");
-/**
- * 获取 阮一峰科技周刊信息
- * @returns
- */
-export function getRuanYFWeeklyData(): { slide: DefaultTheme.Sidebar } {
+const routeConfig = [
+  // 阮一峰科技周刊
+  {
+    baseRoute: `/${RUANYF_WEEKLY}/`,
+    file: `${RUANYF_WEEKLY}/meta.json`
+  },
+  // 前端周刊
+  {
+    baseRoute: `/${FRONTEND_WEEKLY}/`,
+    file: `${FRONTEND_WEEKLY}/meta.json`
+  },
+  // Hello Github 月刊
+  {
+    baseRoute: `/${HELLO_GITHUB}/`,
+    file: `${HELLO_GITHUB}/meta.json`
+  }
+];
+export function getSideData(path: string) {
   // 从配置中读取
   try {
-    const meta = readJSONSync(join(cacheDir, `${RUANYF_WEEKLY}/meta.json`));
+    const meta = readJSONSync(join(cacheDir, path));
     return { slide: meta.slide };
   } catch (error) {
     console.log("error:", error);
     return { slide: [] };
   }
 }
-/**
- * 获取 前端精读周刊
- * @returns
- */
-export function getFrontendWeeklyData(): { slide: DefaultTheme.Sidebar } {
-  // 从配置中读取
-  try {
-    const meta = readJSONSync(join(cacheDir, `${FRONTEND_WEEKLY}/meta.json`));
-    return { slide: meta.slide };
-  } catch (error) {
-    console.log("error:", error);
-    return { slide: [] };
-  }
-}
-/**
- * 获取 HelloGitHub 的数据
- * @returns
- */
-export function getHelloGithubData(): { slide: DefaultTheme.Sidebar } {
-  // 从配置中读取
-  try {
-    const meta = readJSONSync(join(cacheDir, `${HELLO_GITHUB}/meta.json`));
-    return { slide: meta.slide };
-  } catch (error) {
-    console.log("error:", error);
-    return { slide: [] };
-  }
-}
-const ruanyfWeeklyData = getRuanYFWeeklyData();
-const frontWeeklyData = getFrontendWeeklyData();
-const helloGithubData = getHelloGithubData();
+const generateSidebar = (routeConfig: any[]) => {
+  const sidebar = {};
+  routeConfig.forEach((item) => {
+    sidebar[item.baseRoute] = [...getSideData(item.file).slide];
+  });
+  return sidebar;
+};
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "Share-Space",
@@ -69,13 +58,10 @@ export default defineConfig({
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [],
-
-    sidebar: {
-      [`/${RUANYF_WEEKLY}/`]: [...(ruanyfWeeklyData.slide as any)],
-      [`/${FRONTEND_WEEKLY}/`]: [...(frontWeeklyData.slide as any)],
-      [`/${HELLO_GITHUB}/`]: [...(helloGithubData.slide as any)]
+    sidebar: generateSidebar(routeConfig),
+    search: {
+      provider: "local"
     },
-
     socialLinks: [
       { icon: "github", link: "https://github.com/jafshare/share-space" }
     ]
@@ -88,24 +74,25 @@ export default defineConfig({
       ssr: false
     },
     plugins: [
-      Inspect(),
-      SearchPlugin({
-        previewLength: 20,
-        buttonLabel: "搜索",
-        placeholder: "文章搜索",
-        /**
-         * 采用分词器优化.
-         *
-         * 中文分词器：https://www.npmjs.com/package/@node-rs/jieba
-         *
-         * 字典配置：https://www.npmjs.com/package/nodejieba
-         *
-         * 相关文章: https://zhuanlan.zhihu.com/p/453803476
-         */
-        tokenize: function (str) {
-          return cut(str, false);
-        }
-      })
+      Inspect()
+      // TODO 暂时用vite自带搜索
+      // SearchPlugin({
+      //   previewLength: 20,
+      //   buttonLabel: "搜索",
+      //   placeholder: "文章搜索",
+      //   /**
+      //    * 采用分词器优化.
+      //    *
+      //    * 中文分词器：https://www.npmjs.com/package/@node-rs/jieba
+      //    *
+      //    * 字典配置：https://www.npmjs.com/package/nodejieba
+      //    *
+      //    * 相关文章: https://zhuanlan.zhihu.com/p/453803476
+      //    */
+      //   tokenize: function (str) {
+      //     return cut(str, false);
+      //   }
+      // })
     ]
   }
 });
