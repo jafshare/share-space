@@ -77,8 +77,14 @@ async function cloneDocs(docs: DocRecord[]) {
         );
         const filename = doc.filename;
         // TODO 还有一些如 http://www.ruanyifeng.com/blog/2018/07/my-books.html、http://www.ruanyifeng.com/blog/2018/07/my-books.html 需要处理
-        // 处理 issue-8 <span data-type="color" style="color:rgb(34, 34, 34)"> 未闭合的问题
-        if (filename === "issue-8.md") {
+        // 处理 issue-5 <!--> xxxx --> 注释
+        if (filename === "issue-5.md") {
+          transformedContent = transformedContent.replace(
+            /<!-->([\s\S]*?)-->/g,
+            ""
+          );
+        } else if (filename === "issue-8.md") {
+          // 处理 issue-8 <span data-type="color" style="color:rgb(34, 34, 34)"> 未闭合的问题
           transformedContent = transformedContent.replace(/<span[^<>]+>/g, "");
         } else if (filename === "issue-82.md") {
           // 处理 issue-82 %EF%BC%9A 地址跳转问题
