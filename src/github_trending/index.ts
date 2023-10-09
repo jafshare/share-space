@@ -41,36 +41,7 @@ export async function parseDir(
 }
 async function cloneDocs(docs: DocRecord[]) {
   for await (const doc of docs) {
-    await copy(doc.sourcePath, doc.destPath, {
-      transformContent: ({ content }) => {
-        let transformedContent: string = content;
-        // 处理不规范的 img 自闭合标签
-        const closeRE = /<((img)[^<>]*)> *<\/(img)>/g;
-        transformedContent = transformedContent.replace(
-          closeRE,
-          (_, tagContent) => {
-            // 将标签转为自闭合标签，避免报错
-            return `<${tagContent} />`;
-          }
-        );
-        // 对内部链接进行转换，避免跳转到旧网站
-        const inlineLinkRE =
-          /https:\/\/github.com\/521xueweihan\/HelloGitHub\/blob\/master\/content\/(HelloGitHub\d+).md/g;
-        transformedContent = transformedContent.replace(
-          inlineLinkRE,
-          (_, filename) => {
-            return `./${filename}`;
-          }
-        );
-        const filename = doc.filename;
-        // 处理 HelloGitHub73 的 <results> 解析报错
-        if (filename === "HelloGitHub73.md") {
-          const resultsRE = /<results>/g;
-          transformedContent = transformedContent.replace(resultsRE, "");
-        }
-        return transformedContent;
-      }
-    });
+    await copy(doc.sourcePath, doc.destPath);
   }
 }
 
@@ -99,7 +70,10 @@ function generateSide(
  */
 export async function generateDoc() {
   // 拉取仓库
-  await fetchGit("https://github.com/jafshare/GithubTrending.git", cacheDir);
+  await fetchGit(
+    "https://github.com/jafshare/GithubTrending.git#main",
+    cacheDir
+  );
   // 解析目录
   const docRecords = await parseDir(join(cacheDir, "archived"));
   // 生成 meta 文件，供 vitepress 使用
