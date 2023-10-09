@@ -4,3 +4,5 @@ export const RUANYF_WEEKLY = "ruanyf_weekly";
 export const FRONTEND_WEEKLY = "frontend_weekly";
 // HelloGitHub https://github.com/521xueweihan/HelloGitHub
 export const HELLO_GITHUB = "hello_github";
+// https://github.com/jafshare/GithubTrending
+export const GITHUB_TRENDING = "github_trending";

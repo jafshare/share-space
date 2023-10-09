@@ -32,5 +32,6 @@ cache
 docs/src/ruanyf_weekly
 docs/src/frontend_weekly
 docs/src/hello_github
+docs/src/github_trending
 
 .vercel

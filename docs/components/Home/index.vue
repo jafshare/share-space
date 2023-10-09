@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useData } from "vitepress";
 import Card from "../Card/index.vue";
-const { theme } = useData();
+const { theme } = useData<any>();
 const columns = 3;
 </script>
 
@@ -25,6 +25,12 @@ const columns = 3;
         title="前端精读周刊"
         description="想提升前端的技术吗？一起看看吧"
         :link="theme.sidebar['/frontend_weekly/']?.[0].items[0].link"
+      />
+      <Card
+        class="item"
+        title="Github 趋势榜"
+        description="每天定时更新当天的热门仓库，让你了解最近最火的项目"
+        :link="theme.sidebar['/github_trending/']?.[0].items[0].link"
       />
     </div>
   </div>

@@ -3,6 +3,7 @@ import spawnPromise from "spawn-please";
 import { generateDoc } from "./ruanyf_weekly";
 import { generateDoc as frontendGenerateDoc } from "./frontend_weekly";
 import { generateDoc as helloGithubGenerateDoc } from "./hello_github";
+import { generateDoc as trendingGenerateDoc } from "./github_trending";
 import { logger } from "./common/logger";
 logger.info("start");
 export async function run() {
@@ -11,7 +12,8 @@ export async function run() {
     await Promise.all([
       generateDoc(),
       helloGithubGenerateDoc(),
-      frontendGenerateDoc()
+      frontendGenerateDoc(),
+      trendingGenerateDoc()
     ]);
     logger.info("完成更新文档");
     logger.info("页面开始更新");
