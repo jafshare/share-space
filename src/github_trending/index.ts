@@ -41,7 +41,18 @@ export async function parseDir(
 }
 async function cloneDocs(docs: DocRecord[]) {
   for await (const doc of docs) {
-    await copy(doc.sourcePath, doc.destPath);
+    await copy(doc.sourcePath, doc.destPath, {
+      transformContent: ({ content }) => {
+        let transformedContent = content;
+        if (doc.filename === "2023-10.md") {
+          transformedContent = transformedContent.replace(
+            "Simple HTML5 Charts using the <canvas> tag",
+            "Simple HTML5 Charts using the `<canvas>` tag"
+          );
+        }
+        return transformedContent;
+      }
+    });
   }
 }
 
