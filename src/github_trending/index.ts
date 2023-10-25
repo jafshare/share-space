@@ -49,6 +49,10 @@ async function cloneDocs(docs: DocRecord[]) {
             "Simple HTML5 Charts using the <canvas> tag",
             "Simple HTML5 Charts using the `<canvas>` tag"
           );
+          transformedContent = transformedContent.replace(
+            "A small web component for responsive <table> elements.",
+            "A small web component for responsive `<table>` elements."
+          );
         }
         return transformedContent;
       }
