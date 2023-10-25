@@ -72,6 +72,7 @@ export default defineConfig({
     ]
   },
   ignoreDeadLinks: true,
+  markdown: { html: false },
   vite: {
     build: {
       // 解决 SearchPlugin build不执行构建索引的问题
