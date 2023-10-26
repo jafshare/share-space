@@ -53,6 +53,10 @@ async function cloneDocs(docs: DocRecord[]) {
             "A small web component for responsive <table> elements.",
             "A small web component for responsive `<table>` elements."
           );
+          transformedContent = transformedContent.replace(
+            "A SIMPLE YET COMPLICATED WHATSAPP BOT <DO STAR THE REPO>",
+            "A SIMPLE YET COMPLICATED WHATSAPP BOT `<DO STAR THE REPO>`"
+          );
         }
         return transformedContent;
       }
