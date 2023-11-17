@@ -57,6 +57,11 @@ async function cloneDocs(docs: DocRecord[]) {
             "A SIMPLE YET COMPLICATED WHATSAPP BOT <DO STAR THE REPO>",
             "A SIMPLE YET COMPLICATED WHATSAPP BOT `<DO STAR THE REPO>`"
           );
+        } else if (doc.filename === "2023-11.md") {
+          transformedContent = transformedContent.replace(
+            "Simple HTML5 Charts using the <canvas> tag",
+            "Simple HTML5 Charts using the `<canvas>` tag"
+          );
         }
         return transformedContent;
       }
