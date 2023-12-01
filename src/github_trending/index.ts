@@ -44,25 +44,11 @@ async function cloneDocs(docs: DocRecord[]) {
     await copy(doc.sourcePath, doc.destPath, {
       transformContent: ({ content }) => {
         let transformedContent = content;
-        if (doc.filename === "2023-10.md") {
-          transformedContent = transformedContent.replace(
-            "Simple HTML5 Charts using the <canvas> tag",
-            "Simple HTML5 Charts using the `<canvas>` tag"
-          );
-          transformedContent = transformedContent.replace(
-            "A small web component for responsive <table> elements.",
-            "A small web component for responsive `<table>` elements."
-          );
-          transformedContent = transformedContent.replace(
-            "A SIMPLE YET COMPLICATED WHATSAPP BOT <DO STAR THE REPO>",
-            "A SIMPLE YET COMPLICATED WHATSAPP BOT `<DO STAR THE REPO>`"
-          );
-        } else if (doc.filename === "2023-11.md") {
-          transformedContent = transformedContent.replace(
-            "Simple HTML5 Charts using the <canvas> tag",
-            "Simple HTML5 Charts using the `<canvas>` tag"
-          );
-        }
+        // 自动给未闭合标签增加``包裹，一般是用来展示代码
+        transformedContent = transformedContent.replace(
+          /<([a-zA-Z]+)(?=\s|>)(?![^>]*\/>)(?![^>]*<\/\1>)([^>]*[^\/])?>/g,
+          "`$&`"
+        );
         return transformedContent;
       }
     });
